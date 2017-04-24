@@ -118,7 +118,7 @@ void COneGame::SendStep(const STEP &stepPut)
 	int ctempTable[15][15], ptempTable[15][15];
 	int m, n, temp1[20], temp2[20];
 
-	pTable->GetParent()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE);
+	pTable->GetParent()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE); //悔棋按钮冻结
 	//保存先前数据，做悔棋之用
 	for (i = 0; i < 572; i++)
 	{
@@ -174,15 +174,173 @@ void COneGame::SendStep(const STEP &stepPut)
 				//暂时更改玩家信息
 				if (m_Player[i][j][m])
 				{
-					temp1[n] = m;
+					temp1[n] = m;                   //第m组获胜组合
 					m_Player[i][j][m] = false;
-					temp2[n] = m_Win[0][m];
+					temp2[n] = m_Win[0][m];         //第m组获胜组合已下子数
 					m_Win[0][m] = -1;
 					n++;
 				}
 			}
 			ptempTable[i][j] = 0;
-			//TODO:
+			
+			pi = i;
+			pj = j;
+			while (SearchBlank(i, j, ptempTable))    //该部分表示玩家若下某个地方会得多少分，分数越小，对计算机越有利
+			{
+				ptempTable[i][j] = 2; //标记已被查找
+				step.color = m_pTable->GetColor();
+				step.x = i;
+				step.y = j;
+				ptemp = GiveScore(step);
+				if (pscore > ptemp)
+				{
+					pscore = ptemp;
+				}
+			}
+			for (m = 0; m < n; m++)       //恢复玩家信息
+			{
+				m_Player[pi][pj][temp1[m]] = true;
+				m_Win[0][temp1[]] = temp2[m];
+			}
+			if (ctemp + pscore > cscore)  //根据得分情况确定最佳落子位置
+			{
+				cscore = ctemp + pscore;
+				bestX = pi;
+				bestY = pj;
+			}
 		}
 	}
+	m_step.color = 1 - m_pTable->GetColor();
+	m_step.x = bestX;
+	m_step.y = bestY;
+	for (i = 0; i < 572; i++)
+	{
+		if (m_Computer[bestX][bestY][i] && m_Win[1][i] != -1)
+		{
+			m_Win[1][i]++;
+		}
+		if (m_Player[bestX][bestY][i])
+		{
+			m_Player[bestX][bestY][i] = false;
+			m_Win[0][i] = -1;
+		}
+	}
+	m_pTable->GetParent()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(); //悔棋按钮激活
+	m_pTable->Receive();
+}
+
+/**
+* 仅能悔一步棋
+**/
+void COneGame::Back()
+{
+	int i;
+	STEP step;
+
+	//悔掉计算机最后一步棋
+	step = *(m_StepList.begin());
+	m_StepList.pop_front();
+	m_pTable->m_data[step.x][step.y] = -1;
+	for (i = 0; i < 572; i++)
+	{
+		m_Win[0][i] = m_nOldWin[0][i];
+		m_Win[1][i] = m_nOldWin[1][i];
+		m_Player[step.x][step.y][i] = m_bOldPlayer[i];
+	}
+
+	//悔掉玩家最后一步棋
+	step = *(m_StepList.begin());
+	m_StepList.pop_front();
+	m_pTable->m_data[step.x][step.y] = -1;
+	for (i = 0; i < 572; i++)
+	{
+		m_Computer[step.x][step.y][i] = m_bOldComputer[i];
+	}
+	m_pTable->Invalidate();
+	AfxGetMainWnd()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE);
+}
+
+int COneGame::GiveScore(const STEP &stepPut)
+{
+	int i, nScore = 0;
+	for (i = 0; i < 572; i++)
+	{
+		if (m_pTable->GetColor() == stepPut.color)
+		{
+			if (m_Player[stepPut.x][stepPut.y][i])
+			{
+				switch (m_Win[0][i])
+				{
+				case 1:
+					nScore -= 5;
+					break;
+				case 2:
+					nScore -= 50;
+					break;
+				case 3:
+					nScore -= 500;
+					break;
+				case 4:
+					nScore -= 5000;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (m_Computer[stepPut.x][stepPut.y][i])
+			{
+				switch (m_Win[1][i])
+				{
+				case 1:
+					nScore += 5;
+					break;
+				case 2:
+					nScore += 50;
+					break;
+				case 3:
+					nScore += 100;
+					break;
+				case 4:
+					nScore += 10000;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	return nScore;
+}
+
+void COneGame::GetTable(int tempTable[][15], int nowTable[][15])
+{
+	int i, j;
+	for (i = 0; i < 15; i++)
+	{
+		for (j = 0; j < 15; j++)
+		{
+			tempTable[i][j] = nowTable[i][j];
+		}
+	}
+}
+
+bool COneGame::SearchBlank(int &i, int &j, int nowTable[][15])
+{
+	int x, y;
+	for (x = 0; x < 15; x++)
+	{
+		for (y = 0; y < 15; y++)
+		{
+			if (nowTable[x][y] == -1 && nowTable[x][y] != 2)
+			{
+				i = x;
+				j = y;
+				return true;
+			}
+		}
+	}
+	return false;
 }
