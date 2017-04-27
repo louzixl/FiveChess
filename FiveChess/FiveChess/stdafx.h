@@ -37,8 +37,8 @@
 #include <afxsock.h>            // MFC Ì×½Ó×ÖÀ©Õ¹
 
 
-
-
+#include "mmsystem.h"
+#pragma comment(lib, "winmm.lib")
 
 
 
