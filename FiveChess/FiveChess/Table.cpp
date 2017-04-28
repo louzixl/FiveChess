@@ -29,7 +29,7 @@ CTable::~CTable()
 	wsprintf(str, _T("%d"), pApp->m_nDraw);
 	::WritePrivateProfileString(_T("Stats"), _T("Draw"), str, pApp->m_szIni);
 	wsprintf(str, _T("%d"), pApp->m_nLost);
-	::WritePrivateProfileString(_T("Stats"), _T("Lost", str, pApp->m_szIni);
+	::WritePrivateProfileString(_T("Stats"), _T("Lost"), str, pApp->m_szIni);
 	if (NULL != m_pGame)
 		delete m_pGame;
 }
@@ -203,7 +203,7 @@ void CTable::Receive()
 	m_pGame->ReceiveMsg(&msgRecv);
 	switch (msgRecv.uMsg)
 	{
-	case MSG_PUTSTEP:
+	case MSG_DROPDOWN:
 		{
 			PlaySound(MAKEINTRESOURCE(IDR_WAVE_PUT), NULL, SND_RESOURCE | SND_SYNC);
 			SetData(msgRecv.x, msgRecv.y, msgRecv.color);
@@ -292,7 +292,7 @@ void CTable::OnLButtonUp(UINT nFlag, CPoint point)
 		m_pGame->Win(stepPut);
 		CDialog *pDlg = (CDialog *)GetParent();
 		PlaySound(MAKEINTRESOURCE(IDR_WAVE_WIN), NULL, SND_SYNC | SND_RESOURCE);
-		pDlg->MessageBox(_T("恭喜，您获得了胜利！", _T("胜利"), MB_ICONINFORMATION);
+		pDlg->MessageBox(_T("恭喜，您获得了胜利！"), _T("胜利"), MB_ICONINFORMATION);
 		pDlg->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE);
 		m_bWait = TRUE;
 		return;

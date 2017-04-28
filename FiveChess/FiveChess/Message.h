@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 
 typedef struct tagStep{
@@ -13,3 +14,6 @@ typedef struct tagMsgStruct{
 	int color;
 	TCHAR szMsg[128];
 } MSGSTRUCT;
+
+// Âä×ÓÏûÏ¢
+#define MSG_DROPDOWN     0x00000001

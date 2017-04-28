@@ -1,5 +1,9 @@
 #include "stdafx.h"
+#include "FiveChess.h"
 #include "Game.h"
+#include "Table.h"
+#include "Message.h"
+#include "Resource.h"
 
 CGame::~CGame()
 {
@@ -118,7 +122,7 @@ void COneGame::SendStep(const STEP &stepPut)
 	int ctempTable[15][15], ptempTable[15][15];
 	int m, n, temp1[20], temp2[20];
 
-	pTable->GetParent()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE); //悔棋按钮冻结
+	m_pTable->GetParent()->GetDlgItem(IDC_BTN_BACK)->EnableWindow(FALSE); //悔棋按钮冻结
 	//保存先前数据，做悔棋之用
 	for (i = 0; i < 572; i++)
 	{
@@ -200,7 +204,7 @@ void COneGame::SendStep(const STEP &stepPut)
 			for (m = 0; m < n; m++)       //恢复玩家信息
 			{
 				m_Player[pi][pj][temp1[m]] = true;
-				m_Win[0][temp1[]] = temp2[m];
+				m_Win[0][temp1[m]] = temp2[m];
 			}
 			if (ctemp + pscore > cscore)  //根据得分情况确定最佳落子位置
 			{
@@ -344,3 +348,6 @@ bool COneGame::SearchBlank(int &i, int &j, int nowTable[][15])
 	}
 	return false;
 }
+
+void COneGame::ReceiveMsg(MSGSTRUCT *pMsg)
+{}

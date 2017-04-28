@@ -3,19 +3,21 @@
 //
 
 #pragma once
-
+#include "Table.h"
 
 // CFiveChessDlg 对话框
 class CFiveChessDlg : public CDialogEx
 {
 // 构造
 public:
+	CDialog *m_pDlg;
+	CTable m_Table;
 	CFiveChessDlg(CWnd* pParent = NULL);	// 标准构造函数
 
 // 对话框数据
 	enum { IDD = IDD_FIVECHESS_DIALOG };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 
@@ -28,4 +30,10 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	afx_msg void OnMenuAbout();
+	afx_msg void OnMenuPlayerfirst();
+	afx_msg void OnMenuPcfirst();
+	afx_msg void OnBnClickedBtnBack();
 };

@@ -19,6 +19,10 @@ class CFiveChessApp : public CWinApp
 {
 public:
 	CFiveChessApp();
+	TCHAR m_szIni[MAX_PATH];
+	int m_nWin;
+	int m_nDraw;
+	int m_nLost;
 
 // ÖØÐ´
 public:
